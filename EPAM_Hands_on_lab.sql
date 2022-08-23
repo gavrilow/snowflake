@@ -113,7 +113,9 @@ list @EPAM_LAB.TPCH.int_stage;
 
 --PUT data by using SNOWSQL
 -- snowsql -a no19089.ca-central-1.aws -u havrilov
--- PUT 'file://C:\\Users\\Dmytro_Havrilov\\Desktop\\tcph2data\\*.*' @EPAM_LAB.TPCH.int_stage;
+-- snowsql -a hu69119.eu-west-2.aws -u havrilov
+-- PUT 'file://C://snowflake_epam_hands-on_lab\tcph2data\\*.*' @EPAM_LAB.TPCH.int_stage;
+-- PUT 'file://C:/snowflake_epam_hands-on_lab/tcph2data/*.*' @EPAM_LAB.TPCH.int_stage;
 
 -- create file formats
 CREATE FILE FORMAT EPAM_LAB.TPCH.CSV TYPE = 'CSV' COMPRESSION = 'AUTO' FIELD_DELIMITER = ',' RECORD_DELIMITER = '\n' SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = '\042' TRIM_SPACE = TRUE ERROR_ON_COLUMN_COUNT_MISMATCH = TRUE ESCAPE = 'NONE' ESCAPE_UNENCLOSED_FIELD = '\134' DATE_FORMAT = 'AUTO' TIMESTAMP_FORMAT = 'AUTO' NULL_IF = ('\\N');
