@@ -1,193 +1,368 @@
-create database EPAM_LAB;
-create schema EPAM_LAB.CORE_DWH;
-create schema EPAM_LAB.DATA_MART;
-create schema EPAM_LAB.TPCH;
+// Snowflake Training Program for Data Engineers #17
+-- https://learn.epam.com/api/file/get?id=58356&s=2
 
-use schema EPAM_LAB.TPCH;
+create database EPAM_LAB_NEW;
+create schema CORE_DWH;
+create schema DATA_MART;
+drop schema public;
 
-create or replace table EPAM_LAB.TPCH.region
+
+use schema CORE_DWH;
+
+create or replace table CORE_DWH.region
 (
-  r_regionkey INTEGER,
-  r_name      CHAR(25),
-  r_comment   VARCHAR(152)
+  regionkey INTEGER,
+  name      CHAR(25),
+  comment   VARCHAR(152)
 );
 
 
-create or replace table EPAM_LAB.TPCH.nation
+create or replace table CORE_DWH.nation
 (
-  n_nationkey INTEGER not null,
-  n_name      CHAR(27),
-  n_regionkey INTEGER,
-  n_comment   VARCHAR(155)
+  nationkey INTEGER not null,
+  name      CHAR(27),
+  regionkey INTEGER,
+  comment   VARCHAR(155)
 );
 
 
-create or replace table EPAM_LAB.TPCH.supplier
+create or replace table CORE_DWH.supplier
 (
-  s_suppkey   INTEGER not null,
-  s_name      CHAR(25),
-  s_address   VARCHAR(40),
-  s_nationkey INTEGER,
-  s_phone     CHAR(15),
-  s_acctbal   FLOAT8,
-  s_comment   VARCHAR(101)
+  suppkey   INTEGER not null,
+  name      CHAR(25),
+  address   VARCHAR(40),
+  nationkey INTEGER,
+  phone     CHAR(15),
+  acctbal   FLOAT8,
+  comment   VARCHAR(101)
 );
 
 
-create or replace table EPAM_LAB.TPCH.orders
+create or replace table CORE_DWH.orders
 (
-  o_orderkey      INTEGER not null,
-  o_custkey       INTEGER not null,
-  o_orderstatus   CHAR(1),
-  o_totalprice    FLOAT8,
-  o_orderdate     DATE,
-  o_orderpriority CHAR(15),
-  o_clerk         CHAR(15),
-  o_shippriority  INTEGER,
-  o_comment       VARCHAR(79)
+  orderkey      INTEGER not null,
+  custkey       INTEGER not null,
+  orderstatus   CHAR(1),
+  totalprice    FLOAT8,
+  orderdate     DATE,
+  orderpriority CHAR(15),
+  clerk         CHAR(15),
+  shippriority  INTEGER,
+  comment       VARCHAR(79)
 );
 
 
-create or replace table EPAM_LAB.TPCH.partsupp
+create or replace table CORE_DWH.partsupp
 (
-  ps_partkey    INTEGER not null,
-  ps_suppkey    INTEGER not null,
-  ps_availqty   INTEGER,
-  ps_supplycost FLOAT8 not null,
-  ps_comment    VARCHAR(199)
+  partkey    INTEGER not null,
+  suppkey    INTEGER not null,
+  availqty   INTEGER,
+  supplycost FLOAT8 not null,
+  comment    VARCHAR(199)
 );
 
 
-create or replace table EPAM_LAB.TPCH.part
+create or replace table CORE_DWH.part
 (
-  p_partkey     INTEGER not null,
-  p_name        VARCHAR(55),
-  p_mfgr        CHAR(25),
-  p_brand       CHAR(10),
-  p_type        VARCHAR(25),
-  p_size        INTEGER,
-  p_container   CHAR(10),
-  p_retailprice INTEGER,
-  p_comment     VARCHAR(23)
+  partkey     INTEGER not null,
+  name        VARCHAR(55),
+  mfgr        CHAR(25),
+  brand       CHAR(10),
+  type        VARCHAR(25),
+  size        INTEGER,
+  container   CHAR(10),
+  retailprice INTEGER,
+  comment     VARCHAR(23)
 );
 
 
-create or replace table EPAM_LAB.TPCH.customer
+create or replace table CORE_DWH.customer
 (
-  c_custkey    INTEGER not null,
-  c_name       VARCHAR(25),
-  c_address    VARCHAR(40),
-  c_nationkey  INTEGER,
-  c_phone      CHAR(15),
-  c_acctbal    FLOAT8,
-  c_mktsegment CHAR(10),
-  c_comment    VARCHAR(117)
+  custkey    INTEGER not null,
+  name       VARCHAR(25),
+  address    VARCHAR(40),
+  nationkey  INTEGER,
+  phone      CHAR(15),
+  acctbal    FLOAT8,
+  mktsegment CHAR(10),
+  comment    VARCHAR(117)
 );
 
 
-create or replace table EPAM_LAB.TPCH.lineitem
+create or replace table CORE_DWH.lineitem
 (
-  l_orderkey      INTEGER not null,
-  l_partkey       INTEGER not null,
-  l_suppkey       INTEGER not null,
-  l_linenumber    INTEGER not null,
-  l_quantity      INTEGER not null,
-  l_extendedprice FLOAT8 not null,
-  l_discount      FLOAT8 not null,
-  l_tax           FLOAT8 not null,
-  l_returnflag    CHAR(1),
-  l_linestatus    CHAR(1),
-  l_shipdate      DATE,
-  l_commitdate    DATE,
-  l_receiptdate   DATE,
-  l_shipinstruct  CHAR(25),
-  l_shipmode      CHAR(10),
-  l_comment       VARCHAR(44)
+  orderkey      INTEGER not null,
+  partkey       INTEGER not null,
+  suppkey       INTEGER not null,
+  linenumber    INTEGER not null,
+  quantity      INTEGER not null,
+  extendedprice FLOAT8 not null,
+  discount      FLOAT8 not null,
+  tax           FLOAT8 not null,
+  returnflag    CHAR(1),
+  linestatus    CHAR(1),
+  shipdate      DATE,
+  commitdate    DATE,
+  receiptdate   DATE,
+  shipinstruct  CHAR(25),
+  shipmode      CHAR(10),
+  comment       VARCHAR(44)
 );
 
--- drop stage epam_lab.tpch.int_stage;
-CREATE STAGE EPAM_LAB.TPCH.aws_stage URL = 's3://tpch' COMMENT = 'TPCH external stage';
-CREATE STAGE EPAM_LAB.TPCH.int_stage COMMENT = 'Internal stage for TPCH';
+-- drop stage EPAM_LAB.CORE_DWH.int_stage;
+-- CREATE STAGE EPAM_LAB.CORE_DWH.aws_stage URL = 's3://tpch' COMMENT = 'TPCH external stage';
+--CREATE STAGE EPAM_LAB.CORE_DWH.int_stage COMMENT = 'Internal stage for CORE_DWH';
+CREATE STAGE EPAM_LAB_NEW.CORE_DWH.int_stage COMMENT = 'Internal stage for CORE_DWH';
 
-list @EPAM_LAB.TPCH.int_stage;
+--create stage epam_lab_new.core_dwh.int_stage clone EPAM_LAB.CORE_DWH.int_stage;
+-- 000002 (0A000): Unsupported feature 'Cloning internal and temporary stages'.
+
+--list @EPAM_LAB.CORE_DWH.int_stage;
+list @EPAM_LAB_NEW.CORE_DWH.int_stage;
 
 --PUT data by using SNOWSQL
--- snowsql -a no19089.ca-central-1.aws -u havrilov
--- snowsql -a hu69119.eu-west-2.aws -u havrilov
--- PUT 'file://C://snowflake_epam_hands-on_lab\tcph2data\\*.*' @EPAM_LAB.TPCH.int_stage;
--- PUT 'file://C:/snowflake_epam_hands-on_lab/tcph2data/*.*' @EPAM_LAB.TPCH.int_stage;
+-- snowsql -a jp54772.eu-west-2.aws -u havrilov
+-- PUT 'file://C://snowflake_epam_hands-on_lab\tcph2data\\*.*' @EPAM_LAB.CORE_DWH.int_stage;
+-- PUT 'file://C:/snowflake_epam_hands-on_lab/tcph2data/*.*' @EPAM_LAB.CORE_DWH.int_stage;
+-- For MAC
+// PUT 'file:///Users/dmytro_havrilov/Documents/EPAM_snowflake_lab/tcph2data/*.*' @EPAM_LAB_NEW.CORE_DWH.int_stage;
+--remove @EPAM_LAB.CORE_DWH.int_stage;
 
 -- create file formats
-CREATE FILE FORMAT EPAM_LAB.TPCH.CSV TYPE = 'CSV' COMPRESSION = 'AUTO' FIELD_DELIMITER = ',' RECORD_DELIMITER = '\n' SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = '\042' TRIM_SPACE = TRUE ERROR_ON_COLUMN_COUNT_MISMATCH = TRUE ESCAPE = 'NONE' ESCAPE_UNENCLOSED_FIELD = '\134' DATE_FORMAT = 'AUTO' TIMESTAMP_FORMAT = 'AUTO' NULL_IF = ('\\N');
+// CSV
+CREATE FILE FORMAT CORE_DWH.CSV TYPE = 'CSV' COMPRESSION = 'AUTO' FIELD_DELIMITER = ',' RECORD_DELIMITER = '\n' SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = '\042' TRIM_SPACE = TRUE ERROR_ON_COLUMN_COUNT_MISMATCH = TRUE ESCAPE = 'NONE' ESCAPE_UNENCLOSED_FIELD = '\134' DATE_FORMAT = 'AUTO' TIMESTAMP_FORMAT = 'AUTO' NULL_IF = ('\\N');
 
---DSV
-CREATE FILE FORMAT EPAM_LAB.TPCH.DSV TYPE = 'CSV' COMPRESSION = 'AUTO' FIELD_DELIMITER = '|' RECORD_DELIMITER = '\n' SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = '\042' TRIM_SPACE = TRUE ERROR_ON_COLUMN_COUNT_MISMATCH = TRUE ESCAPE = 'NONE' ESCAPE_UNENCLOSED_FIELD = 'NONE' DATE_FORMAT = 'DD.MM.YY' TIMESTAMP_FORMAT = 'AUTO' NULL_IF = ('\\N');
+// DSV
+CREATE FILE FORMAT CORE_DWH.DSV TYPE = 'CSV' COMPRESSION = 'AUTO' FIELD_DELIMITER = '|' RECORD_DELIMITER = '\n' SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = '\042' TRIM_SPACE = TRUE ERROR_ON_COLUMN_COUNT_MISMATCH = TRUE ESCAPE = 'NONE' ESCAPE_UNENCLOSED_FIELD = 'NONE' DATE_FORMAT = 'DD.MM.YY' TIMESTAMP_FORMAT = 'AUTO' NULL_IF = ('\\N');
 
---truncate table EPAM_LAB.TPCH.supplier;
+--truncate table EPAM_LAB.CORE_DWH.supplier;
 
-select $1 from @EPAM_LAB.TPCH.int_stage/h_lineitem.dsv.gz
-limit 10;
+select top 10 $1 from @EPAM_LAB_NEW.CORE_DWH.int_stage/h_lineitem.dsv.gz;
 
-select * from epam_lab.tpch.lineitem
-limit 10;
+select top 10 * from EPAM_LAB_NEW.CORE_DWH.lineitem;
 
--- truncate table epam_lab.tpch.region;
-copy into epam_lab.tpch.customer(C_CUSTKEY,C_NAME,C_ADDRESS,C_NATIONKEY,C_PHONE,C_ACCTBAL,C_MKTSEGMENT,C_COMMENT)
+-- drop task EPAM_LAB.CORE_DWH.customer;
+-- truncate table EPAM_LAB.CORE_DWH.customer;
+
+-- select * from EPAM_LAB.CORE_DWH.customer limit 3;
+
+copy into CORE_DWH.customer(CUSTKEY,NAME,ADDRESS,NATIONKEY,PHONE,ACCTBAL,MKTSEGMENT,COMMENT)
 from (select d.$1, d.$2, d.$3, d.$4, d.$5, replace(d.$6, ',','.') ,d.$7, d.$8
-from @EPAM_LAB.TPCH.int_stage/h_customer.dsv.gz d)
-file_format = (format_name = EPAM_LAB.TPCH.DSV);
+from @EPAM_LAB_NEW.CORE_DWH.int_stage/h_customer.dsv.gz d)
+file_format = (format_name = CORE_DWH.DSV);
 
-copy into EPAM_LAB.TPCH.lineitem(L_ORDERKEY,L_PARTKEY,L_SUPPKEY,L_LINENUMBER,L_QUANTITY,L_EXTENDEDPRICE,L_DISCOUNT,L_TAX,L_RETURNFLAG,L_LINESTATUS,L_SHIPDATE,L_COMMITDATE,L_RECEIPTDATE,L_SHIPINSTRUCT,L_SHIPMODE,L_COMMENT)
+copy into CORE_DWH.lineitem(ORDERKEY,PARTKEY,SUPPKEY,LINENUMBER,QUANTITY,EXTENDEDPRICE,DISCOUNT,TAX,RETURNFLAG,LINESTATUS,SHIPDATE,COMMITDATE,RECEIPTDATE,SHIPINSTRUCT,SHIPMODE,COMMENT)
 from (select d.$1, d.$2, d.$3, d.$4, d.$5, replace(d.$6, ',','.'), replace(d.$7, ',','.'), replace(d.$8, ',','.'), d.$9, d.$10, d.$11, d.$12, d.$13, d.$14, d.$15, d.$16
-from @EPAM_LAB.TPCH.int_stage/h_lineitem.dsv.gz d)
-file_format = (format_name = EPAM_LAB.TPCH.DSV);
+from @EPAM_LAB_NEW.CORE_DWH.int_stage/h_lineitem.dsv.gz d)
+file_format = (format_name = CORE_DWH.DSV);
 
-copy into EPAM_LAB.TPCH.nation
-from @EPAM_LAB.TPCH.int_stage
+copy into CORE_DWH.nation
+from @EPAM_LAB_NEW.CORE_DWH.int_stage
 files = ('h_nation.dsv.gz')
-file_format = (format_name='EPAM_LAB.TPCH.DSV');
+file_format = (format_name='CORE_DWH.DSV');
 
 
-copy into EPAM_LAB.TPCH.orders(O_ORDERKEY,O_CUSTKEY,O_ORDERSTATUS,O_TOTALPRICE,O_ORDERDATE,O_ORDERPRIORITY,O_CLERK,O_SHIPPRIORITY,O_COMMENT)
+copy into CORE_DWH.orders(ORDERKEY,CUSTKEY,ORDERSTATUS,TOTALPRICE,ORDERDATE,ORDERPRIORITY,CLERK,SHIPPRIORITY,COMMENT)
 from (select d.$1, d.$2, d.$3, replace(d.$4, ',','.'), d.$5, d.$6, d.$7, d.$8, d.$9
-from @EPAM_LAB.TPCH.int_stage/h_order.dsv.gz d)
-file_format = (format_name = EPAM_LAB.TPCH.DSV);
+from @EPAM_LAB_NEW.CORE_DWH.int_stage/h_order.dsv.gz d)
+file_format = (format_name = CORE_DWH.DSV);
 
-copy into EPAM_LAB.TPCH.part
-from @EPAM_LAB.TPCH.int_stage
+copy into CORE_DWH.part
+from @EPAM_LAB_NEW.CORE_DWH.int_stage
 files = ('h_part.dsv.gz')
-file_format = (format_name='EPAM_LAB.TPCH.DSV');
+file_format = (format_name='CORE_DWH.DSV');
 
-copy into EPAM_LAB.TPCH.partsupp(PS_PARTKEY,PS_SUPPKEY,PS_AVAILQTY,PS_SUPPLYCOST,PS_COMMENT)
+copy into CORE_DWH.partsupp(PARTKEY,SUPPKEY,AVAILQTY,SUPPLYCOST,COMMENT)
 from (select d.$1, d.$2, d.$3, replace(d.$4, ',','.'), d.$5
-from @EPAM_LAB.TPCH.int_stage/h_partsupp.dsv.gz d)
-file_format = (format_name = EPAM_LAB.TPCH.DSV);
+from @EPAM_LAB_NEW.CORE_DWH.int_stage/h_partsupp.dsv.gz d)
+file_format = (format_name = CORE_DWH.DSV);
 
-copy into EPAM_LAB.TPCH.region
-from @EPAM_LAB.TPCH.int_stage
+copy into CORE_DWH.region
+from @EPAM_LAB_NEW.CORE_DWH.int_stage
 files = ('h_region.csv.gz')
-file_format = (format_name='EPAM_LAB.TPCH.CSV');
+file_format = (format_name='CORE_DWH.CSV');
 
-copy into epam_lab.tpch.supplier(S_SUPPKEY, S_NAME, S_ADDRESS,S_NATIONKEY,S_PHONE,S_ACCTBAL,S_COMMENT)
+copy into CORE_DWH.supplier(SUPPKEY, NAME, ADDRESS,NATIONKEY,PHONE,ACCTBAL,COMMENT)
 from (select d.$1, d.$2, d.$3, d.$4, d.$5, replace(d.$6, ',','.'), d.$7
-from @EPAM_LAB.TPCH.int_stage/h_supplier.dsv.gz d)
-file_format = (format_name = EPAM_LAB.TPCH.DSV);
+from @EPAM_LAB_NEW.CORE_DWH.int_stage/h_supplier.dsv.gz d)
+file_format = (format_name = CORE_DWH.DSV);
 
-select count(*) from EPAM_LAB.TPCH.lineitem
+select count(*) from EPAM_LAB.CORE_DWH.lineitem
 union
-select count(*) from EPAM_LAB.TPCH.orders
+select count(*) from EPAM_LAB.CORE_DWH.orders
 union
-select count(*) from EPAM_LAB.TPCH.partsupp
+select count(*) from EPAM_LAB.CORE_DWH.partsupp
 union
-select count(*) from EPAM_LAB.TPCH.part
+select count(*) from EPAM_LAB.CORE_DWH.part
 union
-select count(*) from EPAM_LAB.TPCH.customer
+select count(*) from EPAM_LAB.CORE_DWH.customer
 union
-select count(*) from EPAM_LAB.TPCH.supplier
+select count(*) from EPAM_LAB.CORE_DWH.supplier
 union
-select count(*) from EPAM_LAB.TPCH.nation
+select count(*) from EPAM_LAB.CORE_DWH.nation
 union
-select count(*) from EPAM_LAB.TPCH.region;
+select count(*) from EPAM_LAB.CORE_DWH.region;
 
-CREATE OR REPLACE PIPE snowflake
-AS COPY INTO EPAM_LAB.TPCH.LINEITEM FROM @EPAM_LAB.TPCH.INT_STAGE FILE_FORMAT = ( FORMAT_NAME =  EPAM_LAB.TPCH.DSV )
+-- CREATE OR REPLACE PIPE snowflake
+-- AS COPY INTO EPAM_LAB.CORE_DWH.LINEITEM FROM @EPAM_LAB.CORE_DWH.INT_STAGE FILE_FORMAT = ( FORMAT_NAME =  EPAM_LAB.CORE_DWH.DSV )
+
+
+// DATA_MART
+-- create tables
+
+create or replace table DATA_MART.orders
+(
+  orderkey      INTEGER not null,
+  custkey       INTEGER,
+  nationkey     INTEGER,
+  regionkey     INTEGER,
+  orderstatus   CHAR(1),
+  totalprice    FLOAT8,
+  orderdate     DATE,
+  orderpriority CHAR(15),
+  clerk         CHAR(15),
+  shippriority  INTEGER,
+  comment       VARCHAR(79)
+);
+
+create or replace table DATA_MART.customer
+(
+  custkey    INTEGER not null,
+  name       VARCHAR(25),
+  address    VARCHAR(40),
+  phone      CHAR(15),
+  acctbal    FLOAT8,
+  mktsegment CHAR(10),
+  comment    VARCHAR(117)
+);
+
+create or replace table DATA_MART.region
+(
+  regionkey INTEGER,
+  name      CHAR(25),
+  comment   VARCHAR(152)
+);
+
+
+create or replace table DATA_MART.nation
+(
+  nationkey INTEGER not null,
+  name      CHAR(27),
+  comment   VARCHAR(155)
+);
+
+
+alter table data_mart.orders
+add constraint orderkey_pk primary key (orderkey);
+
+alter table data_mart.customer
+add constraint custkey_pk primary key (custkey);
+
+alter table data_mart.nation
+add constraint nationkey_pk primary key (nationkey);
+
+alter table data_mart.region
+add constraint regionkey_pk primary key (regionkey);
+
+alter table data_mart.orders
+add constraint custkey_fk foreign key (custkey)
+references data_mart.customer(custkey);
+
+alter table data_mart.orders
+add constraint nationkey_fk foreign key (nationkey)
+references data_mart.nation(nationkey);
+
+alter table data_mart.orders
+add constraint regionkey_fk foreign key (regionkey)
+references data_mart.region(regionkey);
+
+--- procedure to load data from CORE to MART
+
+CREATE OR REPLACE PROCEDURE load_data_to_datamart()
+RETURNS VARCHAR
+LANGUAGE SQL
+AS
+$$
+  BEGIN
+    insert into data_mart.region
+    select regionkey,
+    name,
+    comment
+    from core_dwh.region;
+    
+    insert into data_mart.nation
+    select nationkey,
+    name,
+    comment
+    from core_dwh.nation;
+    
+    insert into data_mart.customer
+    select custkey,
+    name,
+    address,
+    phone,
+    acctbal,
+    mktsegment,
+    comment
+    from core_dwh.customer;
+    
+    insert into data_mart.orders
+    select
+    o.orderkey,
+    o.custkey,
+    n.nationkey,
+    r.regionkey,
+    o.orderstatus,
+    o.totalprice,
+    o.orderdate,
+    o.orderpriority,
+    o.clerk,
+    o.shippriority,
+    o.comment
+    from core_dwh.orders o
+    join core_dwh.customer c on c.custkey = o.custkey
+    join core_dwh.nation n on n.nationkey = c.nationkey
+    join core_dwh.region r on r.regionkey = n.regionkey;
+
+END;
+$$;
+
+-- truncate table data_mart.customer;
+
+use warehouse epam;
+call load_data_to_datamart();
+
+// STREAMS
+create or replace stream region_stream on table epam_lab.core_dwh.region append_only=true;
+create or replace stream nation_stream on table epam_lab.core_dwh.nation append_only=true;
+create or replace stream supplier_stream on table epam_lab.core_dwh.supplier append_only=true;
+create or replace stream customer_stream on table epam_lab.core_dwh.customer append_only=true;
+create or replace stream orders_stream on table epam_lab.core_dwh.orders append_only=true;
+create or replace stream part_stream on table epam_lab.core_dwh.part append_only=true;
+create or replace stream partsupp_stream on table epam_lab.core_dwh.partsupp append_only=true;
+create or replace stream lineitem_stream on table epam_lab.core_dwh.lineitem append_only=true;
+
+// TASKS
+create or replace task datamart_stream_procedure
+warehouse = EPAM
+schedule = '5 minutes'
+when system$stream_has_data('region_stream')
+and system$stream_has_data('nation_stream')
+and system$stream_has_data('supplier_stream')
+and system$stream_has_data('orders_stream')
+and system$stream_has_data('orders_stream')
+and system$stream_has_data('part_stream')
+and system$stream_has_data('partsupp_stream')
+and system$stream_has_data('lineitem_stream')
+as
+call load_data_to_datamart();
+
+-- activate task
+alter task datamart_stream_procedure resume;
+
+show tasks;
+show procedures;
+
+create table CORE_DWH.supplier_backup clone CORE_DWH.supplier;
+
+
